@@ -1,0 +1,21 @@
+.header {
+    font-size: 2.2rem;
+    width: 100%;
+    margin: 0;
+    background-color: #f5f5f5;
+}
+
+.header nav {
+    display: flex;
+    gap: 0.75em;
+    align-items: center;
+    padding: 0.75em;
+    margin: 0;
+}
+
+.header a {
+    list-style-type: none;
+    cursor: pointer;
+    text-decoration: none;
+    color: black;
+}

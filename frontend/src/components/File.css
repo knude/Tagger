@@ -1,0 +1,12 @@
+.file h2 {
+    font-size: 1.5rem;
+    font-weight: 400;
+    text-align: center;
+    margin: 0;
+}
+
+.file {
+    padding: 0.25em;
+    border: 1px solid black;
+    cursor: pointer;
+}
