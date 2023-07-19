@@ -10,3 +10,7 @@
     border: 1px solid black;
     cursor: pointer;
 }
+
+.file img {
+    width: 100%;
+}
