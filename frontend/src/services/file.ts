@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { TaggerFile } from "../types";
+import {TaggerFile, TaggerFileWithTags} from "../types";
 
 const apiUrl = 'http://localhost:3001/api/files';
 
@@ -19,7 +19,7 @@ export const uploadFile = async (file: File): Promise<TaggerFile> => {
   return response.data;
 }
 
-export const getFile = async (id: number): Promise<TaggerFile | null> => {
+export const getFile = async (id: number): Promise<TaggerFileWithTags | null> => {
   try {
     const response = await axios.get(`${apiUrl}/${id}`);
     return response.data;
@@ -40,5 +40,18 @@ export const searchByTags = async (query: string): Promise<TaggerFile[]> => {
   } catch (error) {
     console.error(error);
     return [];
+  }
+}
+
+export const addTags = async (id: number, tags: string[]): Promise<TaggerFileWithTags | null> => {
+  try {
+    const payload = {
+      tags,
+    }
+    const response = await axios.post(`${apiUrl}/${id}/tags`, payload);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return null;
   }
 }

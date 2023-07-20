@@ -1,0 +1,23 @@
+.file-window {
+    display: flex;
+    height: 100%;
+}
+
+.file-window-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 85%;
+    min-height: 100%;
+}
+
+.side-bar {
+    width: 15%;
+    min-height: 100%;
+    margin-right: 1rem;
+}
+
+.side-bar li {
+    cursor: pointer;
+}

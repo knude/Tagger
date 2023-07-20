@@ -12,6 +12,7 @@
     display: block;
     text-decoration: none;
     color: black;
+    max-width: 8em;
 }
 
 .file img {

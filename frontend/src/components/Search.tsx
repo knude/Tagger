@@ -28,9 +28,9 @@ const Search = () => {
   return(
     <div>
       <h1>Search</h1>
-      <FileList files={files}/>
       <input type="text" onChange={handleChange}/>
       <button onClick={search}>Search</button>
+      <FileList files={files}/>
     </div>
 
   )
