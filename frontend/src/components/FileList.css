@@ -18,5 +18,10 @@
 }
 
 .file-list li {
-    width: 6.9em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 10em;
+    height: 10em;
+
 }

@@ -1,8 +1,9 @@
 import { useParams } from 'react-router-dom';
 import { ChangeEvent, useEffect, useState } from "react";
-import { getFile, addTags } from "../services/file";
+import { getFile, addTags } from "../services/files";
 import { TaggerFileWithTags } from "../types";
 import './FileWindow.css';
+import {getObjectURL} from "../services/objects";
 
 const FileWindow = () => {
   const { id } = useParams<{ id: string }>();
@@ -27,6 +28,24 @@ const FileWindow = () => {
     });
   }, [id]);
 
+  const renderFile = () => {
+    if(!file) return null;
+    const objectUrl = getObjectURL(file);
+    if (file.extension === "mp4" || file.extension === "webm"){
+      return (
+        <video controls>
+          <source src={objectUrl} type={`video/${file.extension}`} />
+        </video>
+      );
+    }
+    return (
+      <>
+        <img src={objectUrl} alt="file" />
+        <h2>{file.name}</h2>
+      </>
+    );
+  }
+
   return (
     <div className="file-window">
       <div className="side-bar">
@@ -44,12 +63,7 @@ const FileWindow = () => {
         <button onClick={submitNewTag}>Add Tag</button>
       </div>
       <div className="file-window-content">
-        {file && (
-          <div>
-            <img src="https://i.imgur.com/bNSZLac.png" alt="file" />
-            <h2>{file.name}</h2>
-          </div>
-        )}
+        {renderFile()}
       </div>
     </div>
   );

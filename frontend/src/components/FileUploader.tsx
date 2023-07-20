@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { uploadFile } from "../services/file";
+import { uploadFile } from "../services/files";
 import { TaggerFile } from "../types";
 import File from "./File";
 
@@ -22,7 +22,7 @@ const FileUploader = () => {
       <h1>Upload Files</h1>
       <input type="file" ref={fileRef} />
       <button onClick={submit}>Upload</button>
-      {file && <File name={file.name} id={file.id} />}
+      {file && <File file={file} />}
     </div>
   );
 };

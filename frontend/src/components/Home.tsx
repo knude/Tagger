@@ -1,7 +1,7 @@
 import FileList from "./FileList";
 import { TaggerFile } from "../types";
 import { useEffect, useState } from "react";
-import { getFiles } from "../services/file";
+import { getFiles } from "../services/files";
 
 const Home = () => {
   const [files, setFiles] = useState<TaggerFile[]>([]);

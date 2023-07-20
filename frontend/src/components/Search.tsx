@@ -1,7 +1,7 @@
 import FileList from "./FileList";
 import { useState, ChangeEvent, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { getFiles, searchByTags } from "../services/file";
+import { getFiles, searchByTags } from "../services/files";
 import { TaggerFile } from "../types";
 
 const Search = () => {

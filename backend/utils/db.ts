@@ -54,7 +54,7 @@ export async function getAllFiles(): Promise<TaggerFile[]> {
       extension: row.extension as string,
     }));
   } catch (error) {
-    console.log("Error retrieving files:", error);
+    console.error("Error retrieving files:", error);
     return [];
   }
 }
@@ -117,7 +117,7 @@ export async function insertTagsToFile(fileNumber: number, tags: string[]): Prom
       await pool.query(query, [fileNumber, tagId]);
     }));
   } catch (error) {
-    console.log('Error inserting tags to file:', error);
+    console.error('Error inserting tags to file:', error);
   }
   return await getFileWithTags(fileNumber) as TaggerFileWithTags;
 }
@@ -165,4 +165,12 @@ export async function searchByTags(tags: string[]): Promise<TaggerFile[]> {
   }
 }
 
-
+export async function clearDatabase(): Promise<void> {
+  try {
+    await pool.query('DELETE FROM file_tags');
+    await pool.query('DELETE FROM files');
+    await pool.query('DELETE FROM tags');
+  } catch (error) {
+    console.error('Error clearing database:', error);
+  }
+}

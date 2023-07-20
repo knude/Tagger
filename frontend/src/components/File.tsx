@@ -1,10 +1,11 @@
-import "./File.css"
+import "./File.css";
+import { TaggerFile } from "../types";
+import { getThumbnailURL } from "../services/objects";
 
-const File = ({ name, id }: { name: string, id: number }) => {
+const File = ({ file }: { file: TaggerFile }) => {
   return (
-    <a className="file" href={`/file/${id}`}>
-      <img src="https://i.imgur.com/bNSZLac.png" alt="file" />
-      <h2>{name}</h2>
+    <a className="file" href={`/file/${file.id}`}>
+      <img src={getThumbnailURL(file)} alt="file" />
     </a>
   );
 };

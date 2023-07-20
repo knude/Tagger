@@ -10,7 +10,7 @@ const FileList = ({ files }: { files: TaggerFile[] }) => {
         <ul>
           {files.map((file) => (
             <li key={file.id}>
-              <File name={file.name} id={file.id}/>
+              <File file={file}/>
             </li>
           ))}
         </ul>
