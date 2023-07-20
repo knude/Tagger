@@ -1,11 +1,11 @@
 import "./File.css"
 
-const File = ({ name }: { name: string }) => {
+const File = ({ name, id }: { name: string, id: number }) => {
   return (
-    <div className="file">
+    <a className="file" href={`/file/${id}`}>
       <img src="https://i.imgur.com/bNSZLac.png" alt="file" />
       <h2>{name}</h2>
-    </div>
+    </a>
   );
 };
 

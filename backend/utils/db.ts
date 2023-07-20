@@ -1,6 +1,6 @@
-import {createPool, RowDataPacket} from "mysql2/promise";
+import { createPool, OkPacket, RowDataPacket } from "mysql2/promise";
 import config from "./config";
-import {TaggerFile, TaggerFileWithTags} from "./types";
+import { TaggerFile, TaggerFileWithTags } from "./types";
 
 const pool = createPool({
   host: config.mySqlHost,
@@ -30,11 +30,12 @@ export async function initializeDatabase(): Promise<void> {
     `);
     await pool.query(`
       CREATE TABLE IF NOT EXISTS file_tags (
+        id INT NOT NULL AUTO_INCREMENT,
         file_id INT NOT NULL,
         tag_id INT NOT NULL,
-        FOREIGN KEY (file_id) REFERENCES files (id),
-        FOREIGN KEY (tag_id) REFERENCES tags (id),
-        PRIMARY KEY (file_id, tag_id)
+        PRIMARY KEY (id),
+        FOREIGN KEY (file_id) REFERENCES files(id),
+        FOREIGN KEY (tag_id) REFERENCES tags(id)
       )
     `);
     console.log("Database initialized");
@@ -85,3 +86,53 @@ export async function getFileWithTags(fileId: number): Promise<TaggerFileWithTag
     return null;
   }
 }
+
+export async function insertFile(file: Express.Multer.File): Promise<TaggerFile | undefined> {
+  const splitName = file.originalname.split('.');
+  const name = splitName[0];
+  const extension = splitName[1];
+
+  try {
+    const query = 'INSERT INTO files (name, extension) VALUES (?, ?)';
+    const [result] = await pool.query<OkPacket>(query, [name, extension]);
+    console.log('Result:', result);
+    return {
+      id: result.insertId as number,
+      name,
+      extension,
+    };
+  } catch (error) {
+    console.log('Error inserting file:', error);
+    return undefined;
+  }
+}
+
+export async function searchByTags(tags: string[]): Promise<TaggerFile[]> {
+  try {
+    console.log('Searching by tags:', tags);
+
+    const placeholders = Array.from({ length: tags.length }, () => '?').join(', ');
+
+    const query = `
+      SELECT files.id, files.name, files.extension
+      FROM files
+      LEFT JOIN file_tags ON files.id = file_tags.file_id
+      LEFT JOIN tags ON file_tags.tag_id = tags.id
+      WHERE tags.name IN (${placeholders})
+      GROUP BY files.id
+      HAVING COUNT(DISTINCT tags.name) = ?
+    `;
+
+    const [rows] = await pool.query<RowDataPacket[]>(query, [...tags, tags.length]);
+    return rows.map((row) => ({
+      id: row.id as number,
+      name: row.name as string,
+      extension: row.extension as string,
+    }));
+  } catch (error) {
+    console.log('Error searching by tags:', error);
+    return [];
+  }
+}
+
+

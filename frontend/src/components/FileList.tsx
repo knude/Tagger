@@ -1,18 +1,8 @@
 import { TaggerFile } from "../types";
 import File from "./File";
 import './FileList.css';
-import {getFiles} from "../services/file";
-import {useEffect, useState} from "react";
 
-const FileList = () => {
-  const [files,setFiles] = useState<TaggerFile[]>([]);
-  useEffect(
-    () => {
-      getFiles().then((files) => {
-        setFiles(files);
-      })
-    }
-  )
+const FileList = ({ files }: { files: TaggerFile[] }) => {
 
   return (
     <div>
@@ -20,7 +10,7 @@ const FileList = () => {
         <ul>
           {files.map((file) => (
             <li key={file.id}>
-              <File name={file.name} />
+              <File name={file.name} id={file.id}/>
             </li>
           ))}
         </ul>

@@ -9,6 +9,9 @@
     padding: 0.25em;
     border: 1px solid black;
     cursor: pointer;
+    display: block;
+    text-decoration: none;
+    color: black;
 }
 
 .file img {
