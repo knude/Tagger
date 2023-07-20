@@ -15,8 +15,8 @@ export async function initializeDatabase(): Promise<void> {
   try {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS files (
-       id INT NOT NULL AUTO_INCREMENT,
-       name VARCHAR(255) NOT NULL,
+        id INT NOT NULL AUTO_INCREMENT,
+        name VARCHAR(255) NOT NULL,
         extension VARCHAR(255) NOT NULL,
         PRIMARY KEY (id)
       )
@@ -25,22 +25,22 @@ export async function initializeDatabase(): Promise<void> {
       CREATE TABLE IF NOT EXISTS tags (
         id INT NOT NULL AUTO_INCREMENT,
         name VARCHAR(255) NOT NULL,
-          PRIMARY KEY (id)
+        PRIMARY KEY (id),
+        UNIQUE KEY (name)
         )
     `);
     await pool.query(`
       CREATE TABLE IF NOT EXISTS file_tags (
-        id INT NOT NULL AUTO_INCREMENT,
         file_id INT NOT NULL,
         tag_id INT NOT NULL,
-        PRIMARY KEY (id),
+        PRIMARY KEY (file_id, tag_id),
         FOREIGN KEY (file_id) REFERENCES files(id),
         FOREIGN KEY (tag_id) REFERENCES tags(id)
       )
     `);
     console.log("Database initialized");
   } catch (error) {
-    console.log("Error initializing the database:", error);
+    console.error("Error initializing the database:", error);
   }
 }
 
@@ -82,7 +82,7 @@ export async function getFileWithTags(fileId: number): Promise<TaggerFileWithTag
       })),
     };
   } catch (error) {
-    console.log("Error retrieving file with tags:", error);
+    console.error("Error retrieving file with tags:", error);
     return null;
   }
 }
@@ -95,21 +95,51 @@ export async function insertFile(file: Express.Multer.File): Promise<TaggerFile 
   try {
     const query = 'INSERT INTO files (name, extension) VALUES (?, ?)';
     const [result] = await pool.query<OkPacket>(query, [name, extension]);
-    console.log('Result:', result);
     return {
       id: result.insertId as number,
       name,
       extension,
     };
   } catch (error) {
-    console.log('Error inserting file:', error);
+    console.error('Error inserting file:', error);
     return undefined;
+  }
+}
+
+export async function insertTagsToFile(fileNumber: number, tags: string[]): Promise<TaggerFileWithTags> {
+  try {
+    await Promise.all(tags.map(async (tag) => {
+      const tagId = await createTag(tag);
+      const query = `
+        INSERT INTO file_tags (file_id, tag_id)
+        VALUES (?, ?)
+      `;
+      await pool.query(query, [fileNumber, tagId]);
+    }));
+  } catch (error) {
+    console.log('Error inserting tags to file:', error);
+  }
+  return await getFileWithTags(fileNumber) as TaggerFileWithTags;
+}
+
+
+async function createTag(tagName: string): Promise<number> {
+  try {
+    const query = `
+      INSERT INTO tags (name)
+      VALUES (?)
+      ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id)
+    `;
+    const [result] = await pool.query<OkPacket>(query, [tagName]);
+    return result.insertId as number;
+  } catch (error) {
+    console.error('Error inserting tag:', error);
+    throw error;
   }
 }
 
 export async function searchByTags(tags: string[]): Promise<TaggerFile[]> {
   try {
-    console.log('Searching by tags:', tags);
 
     const placeholders = Array.from({ length: tags.length }, () => '?').join(', ');
 
@@ -130,7 +160,7 @@ export async function searchByTags(tags: string[]): Promise<TaggerFile[]> {
       extension: row.extension as string,
     }));
   } catch (error) {
-    console.log('Error searching by tags:', error);
+    console.error('Error searching by tags:', error);
     return [];
   }
 }
