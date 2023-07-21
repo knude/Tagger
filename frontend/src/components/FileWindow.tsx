@@ -1,25 +1,40 @@
 import { useParams } from 'react-router-dom';
 import { ChangeEvent, useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { getFile, addTags } from "../services/files";
+import { getFile, addTags, deleteFile } from "../services/files";
 import { getObjectURL } from "../services/objects";
 import { handleAnchorClick } from "../utils/utils";
+import Popup from "../common/Popup"
 import './FileWindow.css';
 
 const FileWindow = () => {
+  const queryClient = useQueryClient();
   const { id } = useParams<{ id: string }>();
   const [newTag, setNewTag] = useState("");
+  const [active, setActive] = useState(false);
 
   const handleNewTagChange = (event: ChangeEvent<HTMLInputElement>) => setNewTag(event.target.value);
 
-  const fileQuery = useQuery(["file", id], () => getFile(Number(id)), {
+  const fileQuery = useQuery(
+    ["files", id],
+    () => getFile(Number(id)), {
     enabled: !!id,
   });
 
-  const tagsMutation = useMutation((tags: string[]) => addTags(Number(id), tags), {
-    onSuccess: async () => {
+  const tagsMutation = useMutation(
+    (tags: string[]) => addTags(Number(id), tags), {
+    onSuccess: async (data) => {
+      queryClient.setQueryData(["files", id], data);
       await fileQuery.refetch();
+    }
+  });
+
+  const deleteFileMutation = useMutation(
+    () => deleteFile(Number(id)), {
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(["files"], { exact: true });
+      window.history.back();
     }
   });
 
@@ -51,9 +66,23 @@ const FileWindow = () => {
     );
   }
 
+  const deleteFilePopup = (
+    <Popup active={active} setActive={setActive} isLoading={deleteFileMutation.isLoading} isError={deleteFileMutation.isError}>
+      <div>
+        <h2>Are you sure you want to delete this file?</h2>
+        <button onClick={() => setActive(false)}>Cancel</button>
+        <button onClick={() => deleteFileMutation.mutate()}>Delete</button>
+      </div>
+    </Popup>
+  );
+
+
   return (
     <div className="file-window">
+      {deleteFilePopup}
       <div className="side-bar">
+        <button onClick={() => window.history.back()}>Back</button>
+        <button onClick={() => setActive(true)}>Delete</button>
         <h2>Tags</h2>
         <ul>
           {fileQuery.data.tags.map((tag) => (
@@ -67,7 +96,7 @@ const FileWindow = () => {
         <input type="text" onChange={handleNewTagChange} />
         <button onClick={submitNewTag}>Add Tag</button>
       </div>
-      <div className="file-window-content">
+      <div className="file-window-content center-children">
         {renderFile()}
       </div>
     </div>

@@ -1,4 +1,4 @@
-.popup active {
+.popup.active {
     position: fixed;
     top: 0;
     left: 0;
@@ -9,4 +9,26 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.popup {
+    display: none;
+}
+
+.close-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.popup__content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.popup__content h2 {
+    margin-top: 0;
 }

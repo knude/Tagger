@@ -4,10 +4,6 @@
 }
 
 .file-window-content {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
     width: 85%;
     min-height: 100%;
 }

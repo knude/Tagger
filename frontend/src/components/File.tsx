@@ -1,4 +1,4 @@
-import { TaggerFile } from "../types";
+import { TaggerFile } from "../utils/types";
 import { Link } from "react-router-dom";
 import { getThumbnailURL } from "../services/objects";
 import { handleAnchorClick } from "../utils/utils";

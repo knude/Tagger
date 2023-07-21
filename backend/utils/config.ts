@@ -13,6 +13,7 @@ interface Config {
   minioAccessKey: string;
   minioSecretKey: string;
   allowedFiles: string[];
+  filesPerPage: number;
 }
 
 const config: Config = {
@@ -33,6 +34,7 @@ const config: Config = {
     "video/webm",
     "video/mp4",
   ],
+  filesPerPage: 10,
 };
 
 export default config;

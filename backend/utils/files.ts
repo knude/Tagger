@@ -49,6 +49,15 @@ export async function uploadObject (file: Express.Multer.File, filePath: string)
   }
 }
 
+export const deleteObject = async (filePath: string): Promise<boolean> => {
+  try {
+    await minioClient.removeObject(bucketName, filePath);
+    return true;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export async function getObject (filePath: string) {
   try {
     return await minioClient.getObject(bucketName, filePath);

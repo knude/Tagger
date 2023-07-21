@@ -1,18 +1,13 @@
 import { Request, Response, Router } from 'express';
-import { getAllFiles, getFileWithTags, insertFile, insertTagsToFile, searchByTags } from "../utils/db";
+import {deleteFile, getAllFiles, getFileWithTags, insertFile, insertTagsToFile, searchForFiles} from "../utils/db";
 import multer from "multer";
 import { v4 as uuidv4 } from "uuid";
-import { uploadObject } from "../utils/files";
-import {TaggerFile} from "../utils/types";
+import {deleteObject, uploadObject} from "../utils/files";
+import { TaggerFiles } from "../utils/types";
 
 const router = Router();
 
 const upload = multer({ storage: multer.memoryStorage() });
-
-router.get("/", async (_req: Request, res: Response) => {
-  const files = await getAllFiles();
-  res.json(files);
-});
 
 router.get("/:id", async (req: Request, res: Response) => {
   const file = await getFileWithTags(Number(req.params.id));
@@ -37,12 +32,13 @@ router.post("/", upload.single("file"), async (req: Request, res: Response) => {
 });
 
 router.post("/search", async (req: Request, res: Response) => {
-  const { tags } = req.body;
-  let files: TaggerFile[];
+  const { tags, page } = req.body;
+  const lowerCaseTags = tags.map((tag: string) => tag.toLowerCase());
+  let files: TaggerFiles;
   if (tags.length === 0) {
-    files = await getAllFiles();
+    files = await getAllFiles(page);
   } else {
-    files = await searchByTags(tags);
+    files = await searchForFiles(lowerCaseTags, page);
   }
   res.json(files);
 });
@@ -55,6 +51,21 @@ router.post("/:id/tags", async (req: Request, res: Response) => {
     res.sendStatus(404);
   } else {
     res.json(file);
+  }
+});
+
+router.delete("/:id", async (req: Request, res: Response) => {
+  try {
+    const id = Number(req.params.id);
+    const dbResult = await deleteFile(id);
+    const filePath = `${dbResult?.name}.${dbResult?.extension}`;
+    const thumbnailPath = `/thumbnails/${filePath.split(".")[0]}.png`;
+    await deleteObject(filePath);
+    await deleteObject(thumbnailPath);
+    res.sendStatus(204);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
   }
 });
 

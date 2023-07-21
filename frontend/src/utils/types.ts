@@ -12,3 +12,8 @@ export interface TaggerTag {
 export interface TaggerFileWithTags extends TaggerFile {
     tags: TaggerTag[];
 }
+
+export interface TaggerFiles {
+    files: TaggerFile[];
+    totalPages: number;
+}

@@ -21,3 +21,9 @@ body {
 li {
     list-style-type: none;
 }
+
+.center-children {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

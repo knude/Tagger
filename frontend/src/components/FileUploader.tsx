@@ -9,8 +9,9 @@ const FileUploader = () => {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const newFileMutation = useMutation(uploadFile,  {
-    onSuccess: async () => {
-      await queryClient.invalidateQueries(["files"]);
+    onSuccess: async (data) => {
+      queryClient.setQueryData(["files",data.id], data);
+      await queryClient.invalidateQueries(["files"], { exact: true });
     }
   })
 
