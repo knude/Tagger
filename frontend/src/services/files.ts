@@ -29,11 +29,12 @@ export const searchForFiles = async (): Promise<TaggerFiles> => {
   const query = params.get('q');
   const page = params.get('page') || 1;
 
-  const tags = query ? query.split(',') : [];
+  const tags = query ? query.split(' ') : [];
   const payload = {
     tags,
     page,
   }
+  console.log(payload)
   const response = await axios.post(`${apiUrl}/search`, payload);
   return response.data;
 }
