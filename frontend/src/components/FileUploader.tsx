@@ -1,19 +1,24 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { uploadFile } from "../services/files";
-import { TaggerFile } from "../types";
-import File from "./File";
+import FileList from "./FileList";
 
 
 const FileUploader = () => {
+  const queryClient = useQueryClient();
   const fileRef = useRef<HTMLInputElement>(null);
-  const [file, setFile] = useState<TaggerFile | null>(null);
+
+  const newFileMutation = useMutation(uploadFile,  {
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(["files"]);
+    }
+  })
 
   const submit = async () => {
     const file = fileRef.current?.files?.[0];
     if (file) {
-      const result = await uploadFile(file)
+      newFileMutation.mutate(file);
       fileRef.current.value = "";
-      setFile(result);
     }
   };
 
@@ -22,7 +27,7 @@ const FileUploader = () => {
       <h1>Upload Files</h1>
       <input type="file" ref={fileRef} />
       <button onClick={submit}>Upload</button>
-      {file && <File file={file} />}
+      <FileList />
     </div>
   );
 };

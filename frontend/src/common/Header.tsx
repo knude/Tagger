@@ -1,29 +1,23 @@
-import { FC, MouseEvent } from "react";
+import { FC } from "react";
 import { Link } from 'react-router-dom';
+import { handleAnchorClick } from "../utils/utils";
 import './Header.css';
 
 const Header: FC = () => {
-  const handleLinkClick = (event: MouseEvent<HTMLAnchorElement>) => {
-    if (event.button === 0) {
-      event.currentTarget.removeAttribute('target');
-    } else {
-      event.currentTarget.setAttribute('target', '_blank');
-    }
-  };
 
   return (
     <div className="header">
       <nav>
-        <Link to="/" onClick={handleLinkClick}>
+        <Link to="/" onClick={handleAnchorClick}>
           Home
         </Link>
-        <Link to="/search" onClick={handleLinkClick}>
+        <Link to="/search" onClick={handleAnchorClick}>
           Search
         </Link>
-        <Link to="/login" onClick={handleLinkClick}>
+        <Link to="/login" onClick={handleAnchorClick}>
           Login
         </Link>
-        <Link to="/upload" onClick={handleLinkClick}>
+        <Link to="/upload" onClick={handleAnchorClick}>
           Upload
         </Link>
       </nav>

@@ -1,11 +1,10 @@
 import FileList from "./FileList";
-import { useState, ChangeEvent, useEffect } from "react";
+import { useState, ChangeEvent } from "react";
 import { useSearchParams } from "react-router-dom";
-import { getFiles, searchByTags } from "../services/files";
-import { TaggerFile } from "../types";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Search = () => {
-  const [files, setFiles] = useState<TaggerFile[]>([]);
+  const queryClient = useQueryClient();
   const [query, setQuery] = useState("");
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -13,26 +12,17 @@ const Search = () => {
 
   const search = async () => {
     if (query) setSearchParams({q: query})
-    else setSearchParams({});
+    else setSearchParams({})
+    await queryClient.invalidateQueries(["files"]);
   }
-
-  useEffect(() => {
-    const query = searchParams.get("q");
-    if(!query) {
-      getFiles().then((files) => setFiles(files));
-      return;
-    }
-    searchByTags(query).then((files) => setFiles(files));
-  }, [searchParams]);
 
   return(
     <div>
       <h1>Search</h1>
       <input type="text" onChange={handleChange}/>
       <button onClick={search}>Search</button>
-      <FileList files={files}/>
+      <FileList />
     </div>
-
   )
 }
 

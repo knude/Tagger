@@ -1,35 +1,41 @@
 import { useParams } from 'react-router-dom';
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 import { getFile, addTags } from "../services/files";
-import { TaggerFileWithTags } from "../types";
+import { getObjectURL } from "../services/objects";
+import { handleAnchorClick } from "../utils/utils";
 import './FileWindow.css';
-import {getObjectURL} from "../services/objects";
 
 const FileWindow = () => {
   const { id } = useParams<{ id: string }>();
-  const [file, setFile] = useState<TaggerFileWithTags | null>(null);
   const [newTag, setNewTag] = useState("");
 
   const handleNewTagChange = (event: ChangeEvent<HTMLInputElement>) => setNewTag(event.target.value);
 
-  const submitNewTag = () => {
-    if(!file || !newTag) return;
+  const fileQuery = useQuery(["file", id], () => getFile(Number(id)), {
+    enabled: !!id,
+  });
 
-    addTags(file.id, [newTag]).then((file) => {
-      setFile(file);
-      setNewTag("");
-    });
+  const tagsMutation = useMutation((tags: string[]) => addTags(Number(id), tags), {
+    onSuccess: async () => {
+      await fileQuery.refetch();
+    }
+  });
+
+  const submitNewTag = () => {
+    if (newTag) tagsMutation.mutate([newTag]);
+    setNewTag("");
+  };
+
+  if (fileQuery.isLoading) return <h2>Loading...</h2>
+  if (fileQuery.isError) {
+    const errorMessage = fileQuery.error instanceof Error ? fileQuery.error.message : "An error occurred.";
+    return <h2>{errorMessage}</h2>
   }
 
-  useEffect(() => {
-    if(!id) return;
-    getFile(Number(id)).then((file) => {
-      setFile(file);
-    });
-  }, [id]);
-
   const renderFile = () => {
-    if(!file) return null;
+    const file = fileQuery.data;
     const objectUrl = getObjectURL(file);
     if (file.extension === "mp4" || file.extension === "webm"){
       return (
@@ -41,7 +47,6 @@ const FileWindow = () => {
     return (
       <>
         <img src={objectUrl} alt="file" />
-        <h2>{file.name}</h2>
       </>
     );
   }
@@ -51,11 +56,11 @@ const FileWindow = () => {
       <div className="side-bar">
         <h2>Tags</h2>
         <ul>
-          {file?.tags.map((tag) => (
+          {fileQuery.data.tags.map((tag) => (
             <li key={tag.id}>
-              <a href={`/search?q=${tag.name}`}>
+              <Link to={`/search?q=${tag.name}`} onClick={handleAnchorClick}>
                 {tag.name}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>
