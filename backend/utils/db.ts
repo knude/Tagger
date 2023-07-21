@@ -46,7 +46,8 @@ export async function initializeDatabase(): Promise<void> {
 
 export async function getAllFiles(): Promise<TaggerFile[]> {
   try {
-    const query = "SELECT * FROM files";
+    // get all files, sort in descending order by id
+    const query = 'SELECT * FROM files ORDER BY id DESC';
     const [rows] = await pool.query<RowDataPacket[]>(query);
     return rows.map((row) => ({
       id: row.id as number,
@@ -151,6 +152,7 @@ export async function searchByTags(tags: string[]): Promise<TaggerFile[]> {
       WHERE tags.name IN (${placeholders})
       GROUP BY files.id
       HAVING COUNT(DISTINCT tags.name) = ?
+      ORDER BY files.id DESC
     `;
 
     const [rows] = await pool.query<RowDataPacket[]>(query, [...tags, tags.length]);

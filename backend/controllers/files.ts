@@ -3,6 +3,7 @@ import { getAllFiles, getFileWithTags, insertFile, insertTagsToFile, searchByTag
 import multer from "multer";
 import { v4 as uuidv4 } from "uuid";
 import { uploadObject } from "../utils/files";
+import {TaggerFile} from "../utils/types";
 
 const router = Router();
 
@@ -37,7 +38,12 @@ router.post("/", upload.single("file"), async (req: Request, res: Response) => {
 
 router.post("/search", async (req: Request, res: Response) => {
   const { tags } = req.body;
-  const files = await searchByTags(tags);
+  let files: TaggerFile[];
+  if (tags.length === 0) {
+    files = await getAllFiles();
+  } else {
+    files = await searchByTags(tags);
+  }
   res.json(files);
 });
 
