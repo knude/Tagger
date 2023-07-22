@@ -72,6 +72,32 @@ router.delete("/:id", authMiddleware, async (req: AuthRequest, res: Response) =>
   }
 });
 
+router.post("/:id/tags", authMiddleware, async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.userId as string;
+    const id = Number(req.params.id);
+
+    const isOwner = await isFileOwner(userId,id);
+    if (!isOwner) {
+      res.sendStatus(401);
+      return;
+    }
+
+    const { tags } = req.body;
+    const lowerCaseTags = tags.map((tag: string) => tag.toLowerCase());
+
+    const file = await insertTagsToFile(id, lowerCaseTags);
+    if (file === null) {
+      res.sendStatus(404);
+    } else {
+      res.json(file);
+    }
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
 router.post("/search", async (req: Request, res: Response) => {
   const { tags, page } = req.body;
   const lowerCaseTags = tags.map((tag: string) => tag.toLowerCase());
@@ -83,18 +109,6 @@ router.post("/search", async (req: Request, res: Response) => {
     files = await searchForFiles(lowerCaseTags, page);
   }
   res.json(files);
-});
-
-router.post("/:id/tags", async (req: Request, res: Response) => {
-  const { tags } = req.body;
-  const lowerCaseTags = tags.map((tag: string) => tag.toLowerCase());
-
-  const file = await insertTagsToFile(Number(req.params.id), lowerCaseTags);
-  if (file === null) {
-    res.sendStatus(404);
-  } else {
-    res.json(file);
-  }
 });
 
 export default router;

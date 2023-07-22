@@ -51,10 +51,11 @@ export const searchForFiles = async (): Promise<TaggerFiles> => {
 
 export const addTags = async (id: number, tags: string[]): Promise<TaggerFileWithTags | null> => {
   try {
+    const config = { headers: { authorization: token } }
     const payload = {
       tags,
     }
-    const response = await axios.post(`${apiUrl}/${id}/tags`, payload);
+    const response = await axios.post(`${apiUrl}/${id}/tags`, payload, config);
     return response.data;
   } catch (error) {
     console.error(error);
