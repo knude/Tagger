@@ -4,9 +4,11 @@ import FileWindow from "./components/FileWindow";
 import Header from './common/Header';
 import Home from "./components/Home";
 import Search from "./components/Search";
+import User from "./common/User";
 import "./App.css";
 
 function App() {
+
   return (
     <>
       <Router>
@@ -18,6 +20,7 @@ function App() {
             <Route path="/login" element={<h1>Login</h1>} />
             <Route path="/upload" element={<FileUploader/>} />
             <Route path="/file/:id" element={<FileWindow />} />
+            <Route path="/user" element={<User />} />
           </Routes>
         </div>
       </Router>

@@ -1,16 +1,26 @@
 import axios from 'axios';
 import { TaggerFile, TaggerFiles, TaggerFileWithTags } from "../utils/types";
 
+
 const apiUrl = 'http://localhost:3001/api/files';
 
+let token: string;
+
+export const setToken = (newToken: string) => {
+  token = `Bearer ${newToken}`;
+}
+
 export const uploadFile = async (file: File): Promise<TaggerFile> => {
-  const formData = new FormData();
-  formData.append('file', file);
-  const response = await axios.post(`${apiUrl}`, formData, {
+  const config = {
     headers: {
+      authorization: token,
       'Content-Type': 'multipart/form-data'
     }
-  });
+  }
+  console.log(config)
+  const formData = new FormData();
+  formData.append('file', file);
+  const response = await axios.post(`${apiUrl}`, formData, config);
   return response.data;
 }
 
@@ -34,7 +44,6 @@ export const searchForFiles = async (): Promise<TaggerFiles> => {
     tags,
     page,
   }
-  console.log(payload)
   const response = await axios.post(`${apiUrl}/search`, payload);
   return response.data;
 }

@@ -14,6 +14,9 @@ interface Config {
   minioSecretKey: string;
   allowedFiles: string[];
   filesPerPage: number;
+  auth0Audience: string | undefined;
+  auth0Issuer: string | undefined;
+  auth0SigningAlg: string;
 }
 
 const config: Config = {
@@ -35,6 +38,9 @@ const config: Config = {
     "video/mp4",
   ],
   filesPerPage: 10,
+  auth0Audience: process.env.AUTH0_AUDIENCE,
+  auth0Issuer: process.env.AUTH0_ISSUER,
+  auth0SigningAlg: process.env.AUTH0_SIGNING_ALG ?? "RS256",
 };
 
 export default config;

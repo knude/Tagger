@@ -1,8 +1,9 @@
 import { Request, Response, Router } from 'express';
-import {deleteFile, getAllFiles, getFileWithTags, insertFile, insertTagsToFile, searchForFiles} from "../utils/db";
 import multer from "multer";
+import authMiddleware from "../utils/authMiddleware";
+import { deleteFile, getAllFiles, getFileWithTags, insertFile, insertTagsToFile, searchForFiles } from "../utils/db";
 import { v4 as uuidv4 } from "uuid";
-import {deleteObject, uploadObject} from "../utils/files";
+import { deleteObject, uploadObject } from "../utils/files";
 import { TaggerFiles } from "../utils/types";
 
 const router = Router();
@@ -18,7 +19,7 @@ router.get("/:id", async (req: Request, res: Response) => {
   }
 });
 
-router.post("/", upload.single("file"), async (req: Request, res: Response) => {
+router.post("/", authMiddleware, upload.single("file"), async (req: Request, res: Response) => {
   try {
     const file = req.file as Express.Multer.File;
     file.originalname = `${uuidv4()}.${file.originalname.split(".").pop()}`;
