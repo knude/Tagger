@@ -1,4 +1,4 @@
-import {Client} from "minio"
+import { Client } from "minio"
 import config from "./config"
 import { generateImageThumbnail, generateVideoThumbnail } from "./thumbnails";
 
@@ -25,7 +25,7 @@ export async function initializeBucket() {
   }
 }
 
-export async function uploadObject (file: Express.Multer.File, filePath: string) {
+export async function uploadObject(file: Express.Multer.File, filePath: string){
   try {
     const allowedFile = config.allowedFiles.includes(file.mimetype);
     if (!allowedFile) {
@@ -34,6 +34,7 @@ export async function uploadObject (file: Express.Multer.File, filePath: string)
 
     const mimeType = file.mimetype.split("/")[0];
     const thumbnailPath = `/thumbnails/${filePath.split(".")[0]}.png`;
+
     if (mimeType === "video") {
       const thumbnail = await generateVideoThumbnail(file.buffer);
       await minioClient.putObject(bucketName, thumbnailPath, thumbnail);
@@ -45,6 +46,7 @@ export async function uploadObject (file: Express.Multer.File, filePath: string)
     const uploadedFile = await minioClient.putObject(bucketName, filePath, file.buffer)
     console.log(`Uploaded file ${uploadedFile}`);
   } catch (error) {
+
     throw error;
   }
 }

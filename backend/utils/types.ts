@@ -1,3 +1,5 @@
+import { Request } from "express";
+
 export interface TaggerFile {
   id: number;
   name: string;
@@ -16,4 +18,8 @@ export interface TaggerFileWithTags extends TaggerFile {
 export interface TaggerFiles {
   files: TaggerFile[];
   totalPages: number;
+}
+
+export interface AuthRequest extends Request {
+  userId?: string;
 }

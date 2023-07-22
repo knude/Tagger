@@ -17,7 +17,7 @@ export const uploadFile = async (file: File): Promise<TaggerFile> => {
       'Content-Type': 'multipart/form-data'
     }
   }
-  console.log(config)
+
   const formData = new FormData();
   formData.append('file', file);
   const response = await axios.post(`${apiUrl}`, formData, config);
@@ -25,7 +25,8 @@ export const uploadFile = async (file: File): Promise<TaggerFile> => {
 }
 
 export const deleteFile = async (id: number): Promise<void> => {
-  const response = await axios.delete(`${apiUrl}/${id}`);
+  const config = { headers: { authorization: token } }
+  const response = await axios.delete(`${apiUrl}/${id}`, config);
   return response.data;
 }
 

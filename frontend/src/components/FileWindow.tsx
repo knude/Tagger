@@ -10,7 +10,8 @@ import './FileWindow.css';
 
 const FileWindow = () => {
   const queryClient = useQueryClient();
-  const { id } = useParams<{ id: string }>();
+  const { id: idParam } = useParams<{ id: string }>();
+  const id = Number(idParam);
   const [newTag, setNewTag] = useState("");
   const [active, setActive] = useState(false);
 
@@ -18,12 +19,12 @@ const FileWindow = () => {
 
   const fileQuery = useQuery(
     ["files", id],
-    () => getFile(Number(id)), {
+    () => getFile(id), {
     enabled: !!id,
   });
 
   const tagsMutation = useMutation(
-    (tags: string[]) => addTags(Number(id), tags), {
+    (tags: string[]) => addTags(id, tags), {
     onSuccess: async (data) => {
       queryClient.setQueryData(["files", id], data);
       await fileQuery.refetch();
@@ -31,9 +32,9 @@ const FileWindow = () => {
   });
 
   const deleteFileMutation = useMutation(
-    () => deleteFile(Number(id)), {
+    () => deleteFile(id), {
     onSuccess: async () => {
-      await queryClient.invalidateQueries(["files"], { exact: true });
+      await queryClient.refetchQueries(["files"],{ exact: true });
       window.history.back();
     }
   });
@@ -43,7 +44,7 @@ const FileWindow = () => {
     setNewTag("");
   };
 
-  if (fileQuery.isLoading) return <h2>Loading...</h2>
+  if (fileQuery.isLoading || !fileQuery) return <h2>Loading...</h2>
   if (fileQuery.isError) {
     const errorMessage = fileQuery.error instanceof Error ? fileQuery.error.message : "An error occurred.";
     return <h2>{errorMessage}</h2>
@@ -76,7 +77,6 @@ const FileWindow = () => {
     </Popup>
   );
 
-
   return (
     <div className="file-window">
       {deleteFilePopup}
@@ -85,7 +85,7 @@ const FileWindow = () => {
         <button onClick={() => setActive(true)}>Delete</button>
         <h2>Tags</h2>
         <ul>
-          {fileQuery.data.tags.map((tag) => (
+          {fileQuery.data.tags?.map((tag) => (
             <li key={tag.id}>
               <Link to={`/search?q=${tag.name}`} onClick={handleAnchorClick}>
                 {tag.name}

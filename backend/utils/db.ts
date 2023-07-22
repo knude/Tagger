@@ -38,6 +38,21 @@ export async function initializeDatabase(): Promise<void> {
         FOREIGN KEY (tag_id) REFERENCES tags(id)
       )
     `);
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id VARCHAR(255) NOT NULL,
+        PRIMARY KEY (id)
+      )
+    `);
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS user_tags (
+        user_id VARCHAR(255) NOT NULL,
+        tag_id INT NOT NULL,
+        PRIMARY KEY (user_id, tag_id),
+        FOREIGN KEY (user_id) REFERENCES users(id),
+        FOREIGN KEY (tag_id) REFERENCES tags(id)
+      )
+    `);
     console.log("Database initialized");
   } catch (error) {
     console.error("Error initializing the database:", error);
@@ -45,6 +60,7 @@ export async function initializeDatabase(): Promise<void> {
 }
 
 export async function getAllFiles(page: number): Promise<TaggerFiles> {
+
   const offset = (page - 1) * config.filesPerPage;
   const query = `
     SELECT id, name, extension
@@ -53,12 +69,14 @@ export async function getAllFiles(page: number): Promise<TaggerFiles> {
     LIMIT ${config.filesPerPage}
     OFFSET ${offset}
   `;
+
   const [rows] = await pool.query<RowDataPacket[]>(query);
   const taggerFiles = rows.map((row) => ({
     id: row.id as number,
     name: row.name as string,
     extension: row.extension as string,
   }));
+
   const totalPages = await getTotalPages([]);
   return {
     files: taggerFiles,
@@ -89,18 +107,40 @@ export async function getFileWithTags(fileId: number): Promise<TaggerFileWithTag
   };
 }
 
-export async function insertFile(file: Express.Multer.File): Promise<TaggerFile | undefined> {
+export async function insertFile(file: Express.Multer.File, userId: string): Promise<TaggerFile | undefined> {
   const splitName = file.originalname.split('.');
   const name = splitName[0];
   const extension = splitName[1];
 
-    const query = 'INSERT INTO files (name, extension) VALUES (?, ?)';
-    const [result] = await pool.query<OkPacket>(query, [name, extension]);
-    return {
-      id: result.insertId as number,
-      name,
-      extension,
-    };
+  await createUserIfNotExists(userId);
+
+  const query = 'INSERT INTO files (name, extension) VALUES (?, ?)';
+  const [result] = await pool.query<OkPacket>(query, [name, extension]);
+
+  await setUserToFile(userId, result.insertId as number);
+
+  return {
+    id: result.insertId as number,
+    name,
+    extension,
+  };
+}
+
+async function createUserIfNotExists(userId: string): Promise<void> {
+  const query = `
+    INSERT INTO users (id)
+    VALUES (?)
+    ON DUPLICATE KEY UPDATE id = id
+  `;
+  await pool.query(query, [userId]);
+}
+
+async function setUserToFile(userId: string, fileId: number): Promise<void> {
+  const query = `
+    INSERT INTO user_files (user_id, file_id)
+    VALUES (?, ?)
+  `;
+  await pool.query(query, [userId, fileId]);
 }
 
 export async function insertTagsToFile(fileNumber: number, tags: string[]): Promise<TaggerFileWithTags> {
@@ -156,6 +196,7 @@ async function getTotalPages(tags: string[]): Promise<number> {
 
 
 export async function searchForFiles(tags: string[], page: number): Promise<TaggerFiles> {
+
   const offset = (page - 1) * config.filesPerPage;
 
   const placeholders = tags.map(() => '?').join(', ');
@@ -204,16 +245,28 @@ export async function deleteFile(fileId: number): Promise<TaggerFile> {
   const deleteFileTagsQuery = 'DELETE FROM file_tags WHERE file_id = ?';
   await pool.query(deleteFileTagsQuery, [fileId]);
 
+  const deleteUserFileQuery = 'DELETE FROM user_files WHERE file_id = ?';
+  await pool.query(deleteUserFileQuery, [fileId]);
+
   const deleteFileQuery = 'DELETE FROM files WHERE id = ?';
   await pool.query(deleteFileQuery, [fileId]);
   return file;
 }
 
+export async function isFileOwner(userId: string, fileId: number): Promise<boolean> {
+  const query = 'SELECT * FROM user_files WHERE user_id = ? AND file_id = ?';
+  const [rows] = await pool.query<RowDataPacket[]>(query, [userId, fileId]);
+  return rows.length > 0;
+}
+
 export async function clearDatabase(): Promise<void> {
   try {
+    console.log("Clearing database")
+    await pool.query('DELETE FROM user_files');
     await pool.query('DELETE FROM file_tags');
     await pool.query('DELETE FROM files');
     await pool.query('DELETE FROM tags');
+    await pool.query('DELETE FROM users');
   } catch (error) {
     console.error('Error clearing database:', error);
   }
