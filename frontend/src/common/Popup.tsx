@@ -4,7 +4,7 @@ interface PopupProps {
   active: boolean;
   setActive: (active: boolean) => void;
   isLoading: boolean;
-  isError: boolean;
+  isError?: boolean;
   children: any;
 }
 

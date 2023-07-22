@@ -69,11 +69,13 @@ const FileWindow = () => {
 
   const deleteFilePopup = (
     <Popup active={active} setActive={setActive} isLoading={deleteFileMutation.isLoading} isError={deleteFileMutation.isError}>
-      <div>
+      <>
         <h2>Are you sure you want to delete this file?</h2>
-        <button onClick={() => setActive(false)}>Cancel</button>
-        <button onClick={() => deleteFileMutation.mutate()}>Delete</button>
-      </div>
+        <div className="right">
+          <button onClick={() => setActive(false)}>Cancel</button>
+          <button onClick={() => deleteFileMutation.mutate()}>Delete</button>
+        </div>
+      </>
     </Popup>
   );
 

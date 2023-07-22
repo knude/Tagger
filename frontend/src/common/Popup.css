@@ -32,3 +32,8 @@
 .popup__content h2 {
     margin-top: 0;
 }
+
+.popup__content button {
+    margin-left: 1em;
+    padding: 0.5em 1em;
+}

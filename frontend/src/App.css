@@ -31,3 +31,8 @@ li {
 .round {
     border-radius: 50%;
 }
+
+.right {
+    display: flex;
+    justify-content: flex-end;
+}
