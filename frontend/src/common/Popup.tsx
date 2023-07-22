@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import "./Popup.css"
 
 interface PopupProps {
@@ -14,8 +15,25 @@ const Popup = ({ active, setActive, isLoading, isError, children }: PopupProps) 
       <button onClick={() => setActive(false)}>Close</button>
     );
   }
+
+  useEffect(() => {
+    const closePopup = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setActive(false);
+      }
+    }
+    document.addEventListener("keydown", closePopup);
+    return () => document.removeEventListener("keydown", closePopup);
+  },[]);
+
+  const handleClickOutside = (e: any) => {
+    if (e.target.className === "popup active") {
+      setActive(false);
+    }
+  }
+
   return (
-    <div className={`popup ${active ? "active" : ""}`}>
+    <div className={`popup ${active ? "active" : ""}`} onClick={handleClickOutside}>
       <div className="popup__content">
         {
           isLoading ? (

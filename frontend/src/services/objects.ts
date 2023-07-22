@@ -1,4 +1,4 @@
-import {TaggerFile} from "../utils/types";
+import { TaggerFile } from "../utils/types";
 
 const apiUrl = 'http://localhost:3001/api/objects';
 

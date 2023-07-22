@@ -1,20 +1,13 @@
 import { FC, useState } from "react";
 import { Link } from 'react-router-dom';
 import { useAuth0 } from "@auth0/auth0-react";
-import { setToken } from "../services/files";
 import { handleAnchorClick } from "../utils/utils";
 import Popup from "../common/Popup"
 import './Header.css';
 
 const Header: FC = () => {
   const [active, setActive] = useState(false);
-  const { loginWithRedirect, logout, isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
-
-  if (isAuthenticated) {
-    getAccessTokenSilently().then((token) => {
-      setToken(token);
-    });
-  }
+  const { loginWithRedirect, logout, isAuthenticated, isLoading } = useAuth0();
 
   return (
     <div className="header">

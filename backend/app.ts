@@ -4,6 +4,7 @@ import { initializeDatabase } from "./utils/db";
 import { initializeBucket } from "./utils/files";
 import filesRouter from "./controllers/files";
 import objectsRouter from "./controllers/objects";
+import authRouter from "./controllers/auth";
 
 const app = express();
 
@@ -18,5 +19,6 @@ app.use(cors());
 
 app.use("/api/files", filesRouter);
 app.use("/api/objects", objectsRouter);
+app.use("/api/auth", authRouter);
 
 export default app;

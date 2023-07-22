@@ -1,19 +1,13 @@
 import axios from 'axios';
 import { TaggerFile, TaggerFiles, TaggerFileWithTags } from "../utils/types";
-
+import { getToken } from "../utils/utils";
 
 const apiUrl = 'http://localhost:3001/api/files';
-
-let token: string;
-
-export const setToken = (newToken: string) => {
-  token = `Bearer ${newToken}`;
-}
 
 export const uploadFile = async (file: File): Promise<TaggerFile> => {
   const config = {
     headers: {
-      authorization: token,
+      authorization: getToken(),
       'Content-Type': 'multipart/form-data'
     }
   }
@@ -25,7 +19,7 @@ export const uploadFile = async (file: File): Promise<TaggerFile> => {
 }
 
 export const deleteFile = async (id: number): Promise<void> => {
-  const config = { headers: { authorization: token } }
+  const config = { headers: { authorization: getToken() } }
   const response = await axios.delete(`${apiUrl}/${id}`, config);
   return response.data;
 }
@@ -51,7 +45,7 @@ export const searchForFiles = async (): Promise<TaggerFiles> => {
 
 export const addTags = async (id: number, tags: string[]): Promise<TaggerFileWithTags | null> => {
   try {
-    const config = { headers: { authorization: token } }
+    const config = { headers: { authorization: getToken() } }
     const payload = {
       tags,
     }

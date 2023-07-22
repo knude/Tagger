@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { getFile, addTags, deleteFile } from "../services/files";
 import { getObjectURL } from "../services/objects";
+import { isOwner } from "../services/auth";
 import { handleAnchorClick } from "../utils/utils";
 import Popup from "../common/Popup"
 import './FileWindow.css';
@@ -16,6 +17,12 @@ const FileWindow = () => {
   const [active, setActive] = useState(false);
 
   const handleNewTagChange = (event: ChangeEvent<HTMLInputElement>) => setNewTag(event.target.value);
+
+  const authQuery = useQuery(
+    ["auth"],
+    () => isOwner(id), {
+    enabled: !!id,
+  });
 
   const fileQuery = useQuery(
     ["files", id],
@@ -84,7 +91,6 @@ const FileWindow = () => {
       {deleteFilePopup}
       <div className="side-bar">
         <button onClick={() => window.history.back()}>Back</button>
-        <button onClick={() => setActive(true)}>Delete</button>
         <h2>Tags</h2>
         <ul>
           {fileQuery.data.tags?.map((tag) => (
@@ -95,8 +101,14 @@ const FileWindow = () => {
             </li>
           ))}
         </ul>
-        <input type="text" onChange={handleNewTagChange} />
-        <button onClick={submitNewTag}>Add Tag</button>
+        {authQuery.data && (
+          <>
+            <input type="text" onChange={handleNewTagChange} />
+            <button onClick={submitNewTag}>Add Tag</button>
+            <h2>File Actions</h2>
+            <button onClick={() => setActive(true)}>Delete</button>
+          </>
+        )}
       </div>
       <div className="file-window-content center-children">
         {renderFile()}
