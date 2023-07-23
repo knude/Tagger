@@ -1,15 +1,20 @@
 import { Response, Router } from 'express';
 import { AuthRequest } from "../utils/types";
-import authMiddleware from '../utils/authMiddleware';
+import { getUserId } from '../utils/authMiddleware';
 import { isFileOwner } from "../utils/db";
 
 const router = Router();
 
-router.get('/:id/owner', authMiddleware, async (req: AuthRequest, res: Response) => {
+router.get('/:id/owner', async (req: AuthRequest, res: Response) => {
   try {
-    const userId = req.userId as string;
-    const fileId = Number(req.params.id);
-    const isOwner = await isFileOwner(userId, fileId);
+    const authorization = req.headers.authorization;
+    if (!authorization) {
+      res.json(false)
+      return;
+    }
+    const userId = await getUserId(authorization);
+    const id = Number(req.params.id);
+    const isOwner = await isFileOwner(userId, id);
     res.json(isOwner);
   } catch (error) {
     console.error(error);

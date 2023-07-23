@@ -2,10 +2,12 @@ import { useRef } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { uploadFile } from "../services/files";
 import FileList from "./FileList";
+import { useAuth0 } from "@auth0/auth0-react";
 
 
 const FileUploader = () => {
   const queryClient = useQueryClient();
+  const { isAuthenticated } = useAuth0();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const newFileMutation = useMutation(uploadFile,  {
@@ -26,9 +28,14 @@ const FileUploader = () => {
   return (
     <div>
       <h1>Upload Files</h1>
-      <input type="file" ref={fileRef} />
-      <button onClick={submit}>Upload</button>
-      <FileList />
+      {isAuthenticated && (
+        <>
+          <input type="file" ref={fileRef} />
+          <button onClick={submit}>Upload</button>
+          <FileList />
+        </>
+      ) || <h2>Log in to upload files</h2>
+      }
     </div>
   );
 };

@@ -8,15 +8,20 @@ import Search from "./components/Search";
 import User from "./common/User";
 import "./App.css";
 import { setToken } from "./utils/utils";
+import {useEffect, useState} from "react";
 
 function App() {
   const { getAccessTokenSilently, isAuthenticated } = useAuth0();
+  const [tokenChanged, setTokenChanged] = useState<boolean>(false);
 
-  if (isAuthenticated) {
-    getAccessTokenSilently().then((token) => {
-      setToken(token);
-    });
-  }
+  useEffect(() => {
+    if (isAuthenticated) {
+      getAccessTokenSilently().then((token) => {
+        setToken(token);
+        setTokenChanged(true);
+      })
+    }
+  }, [isAuthenticated]);
 
   return (
     <>
@@ -27,7 +32,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/search" element={<Search />} />
             <Route path="/login" element={<h1>Login</h1>} />
-            <Route path="/upload" element={<FileUploader/>} />
+            <Route path="/upload" element={<FileUploader />} />
             <Route path="/file/:id" element={<FileWindow />} />
             <Route path="/user" element={<User />} />
           </Routes>

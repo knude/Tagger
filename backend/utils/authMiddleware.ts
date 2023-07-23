@@ -15,11 +15,15 @@ type AuthMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => P
 const authMiddleware: AuthMiddleware = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     jwtCheck(req, res, next);
-    const decoded: { sub: string } = jwtDecode(req.headers.authorization?.split(" ")[1] ?? "");
-    req.userId = decoded.sub;
+    req.userId = await getUserId(req.headers.authorization as string);
   } catch (error) {
     next(error);
   }
 };
+
+export async function getUserId(token: string): Promise<string> {
+  const decodedToken = jwtDecode(token) as { sub: string };
+  return decodedToken.sub;
+}
 
 export default authMiddleware;

@@ -5,11 +5,11 @@ import { Link } from "react-router-dom";
 import { getFile, addTags, deleteFile } from "../services/files";
 import { getObjectURL } from "../services/objects";
 import { isOwner } from "../services/auth";
-import { handleAnchorClick } from "../utils/utils";
+import { getToken, handleAnchorClick } from "../utils/utils";
 import Popup from "../common/Popup"
 import './FileWindow.css';
 
-const FileWindow = () => {
+const FileWindow = ()  => {
   const queryClient = useQueryClient();
   const { id: idParam } = useParams<{ id: string }>();
   const id = Number(idParam);
@@ -19,9 +19,9 @@ const FileWindow = () => {
   const handleNewTagChange = (event: ChangeEvent<HTMLInputElement>) => setNewTag(event.target.value);
 
   const authQuery = useQuery(
-    ["auth"],
+    ["auth",id],
     () => isOwner(id), {
-    enabled: !!id,
+    enabled: !!id && !!getToken(),
   });
 
   const fileQuery = useQuery(

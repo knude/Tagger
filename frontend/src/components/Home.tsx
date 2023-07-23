@@ -1,10 +1,10 @@
-import FileList from "./FileList";
+import SearchBar from "./SearchBar";
 
 const Home = () => {
   return (
-    <div className="home">
-      <h1>Browse</h1>
-      <FileList />
+    <div>
+      <h1>Home</h1>
+      <SearchBar />
     </div>
   );
 };

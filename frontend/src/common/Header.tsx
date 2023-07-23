@@ -28,7 +28,6 @@ const Header: FC = () => {
         <Link to="/upload" onClick={handleAnchorClick}>
           Upload
         </Link>
-
         {isAuthenticated && !isLoading && (
           <>
             <Link to="/user" onClick={handleAnchorClick}>
