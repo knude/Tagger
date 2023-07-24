@@ -6,7 +6,7 @@ import "./File.css";
 
 const File = ({ file }: { file: TaggerFile }) => {
   return (
-    <Link to={`/file/${file.id}`} className="file" onClick={handleAnchorClick}>
+    <Link to={`/file/${file.id}`} className="file center-children" onClick={handleAnchorClick}>
       <img src={getThumbnailURL(file)} alt="file" />
     </Link>
   );

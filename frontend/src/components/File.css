@@ -2,9 +2,6 @@
     width: 10em;
     height: 10em;
     cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .file img {
