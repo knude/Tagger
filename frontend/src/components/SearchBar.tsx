@@ -1,12 +1,11 @@
-import {useQueryClient} from "@tanstack/react-query";
-import {ChangeEvent, useState} from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { ChangeEvent, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-
 
 const SearchBar = () => {
   const queryClient = useQueryClient();
   const [query, setQuery] = useState("");
-  const [searchParams, setSearchParams] = useSearchParams()
+  const setSearchParams = useSearchParams()[1];
   const navigate = useNavigate();
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => setQuery(event.target.value);
@@ -22,10 +21,10 @@ const SearchBar = () => {
   }
 
   return (
-    <div>
+    <form>
       <input type="text" onChange={handleChange}/>
       <button onClick={search}>Search</button>
-    </div>
+    </form>
   )
 }
 
