@@ -1,10 +1,20 @@
 .file {
-    width: 10em;
-    height: 10em;
     cursor: pointer;
+    position: relative;
 }
 
 .file img {
-    max-height: 100%;
-    max-width: 100%;
+    max-height: 10em;
+    max-width: 10em;
+}
+
+.file span {
+    color: white;
+    background-color: black;
+    position: absolute;
+    bottom: 0.3em;
+    right: 0.3em;
+    padding: 0.1em 0.2em;
+    z-index: 1;
+    opacity: 0.8;
 }

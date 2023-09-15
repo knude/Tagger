@@ -21,30 +21,30 @@ const FileWindow = ()  => {
   const authQuery = useQuery(
     ["auth",id],
     () => isOwner(id), {
-    enabled: !!id && !!getToken(),
-  });
+      enabled: !!id && !!getToken(),
+    });
 
   const fileQuery = useQuery(
     ["files", id],
     () => getFile(id), {
-    enabled: !!id,
-  });
+      enabled: !!id,
+    });
 
   const tagsMutation = useMutation(
     (tags: string[]) => addTags(id, tags), {
-    onSuccess: async (data) => {
-      queryClient.setQueryData(["files", id], data);
-      await fileQuery.refetch();
-    }
-  });
+      onSuccess: async (data) => {
+        queryClient.setQueryData(["files", id], data);
+        await fileQuery.refetch();
+      }
+    });
 
   const deleteFileMutation = useMutation(
     () => deleteFile(id), {
-    onSuccess: async () => {
-      await queryClient.refetchQueries(["files"],{ exact: true });
-      window.history.back();
-    }
-  });
+      onSuccess: async () => {
+        await queryClient.refetchQueries(["files"],{ exact: true });
+        window.history.back();
+      }
+    });
 
   const submitNewTag = () => {
     if (newTag) tagsMutation.mutate([newTag]);
@@ -103,8 +103,10 @@ const FileWindow = ()  => {
         </ul>
         {authQuery.data && (
           <>
-            <input type="text" onChange={handleNewTagChange} />
-            <button onClick={submitNewTag}>Add Tag</button>
+            <form onSubmit={(e) => {e.preventDefault(); submitNewTag()}}>
+              <input type="text" value={newTag} onChange={handleNewTagChange} />
+              <button type="submit">Add Tag</button>
+            </form>
             <h2>File Actions</h2>
             <button onClick={() => setActive(true)}>Delete</button>
           </>
