@@ -53,6 +53,15 @@ export async function initializeDatabase(): Promise<void> {
         FOREIGN KEY (tag_id) REFERENCES tags(id)
       )
     `);
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS user_files (
+        user_id VARCHAR(255) NOT NULL,
+        file_id INT NOT NULL,
+        PRIMARY KEY (user_id, file_id),
+        FOREIGN KEY (user_id) REFERENCES users(id),
+        FOREIGN KEY (file_id) REFERENCES files(id)
+      )
+    `);
     console.log("Database initialized");
   } catch (error) {
     console.error("Error initializing the database:", error);
