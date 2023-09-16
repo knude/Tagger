@@ -1,5 +1,5 @@
-import {useQueryClient} from "@tanstack/react-query";
-import {ChangeEvent, useEffect, useState} from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import "./SearchBar.css"
 
@@ -14,7 +14,7 @@ const SearchBar = () => {
     if (!query && searchParams.get("q")) {
       setQuery(searchParams.get("q") ?? "");
     }
-  }, []);
+  }, [searchParams.get("q")]);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => setQuery(event.target.value);
 

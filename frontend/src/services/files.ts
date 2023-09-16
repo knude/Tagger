@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { TaggerFile, TaggerFiles, TaggerFileWithTags } from "../utils/types";
+import { TaggerFile, TaggerFiles, TaggerFileWithTags, TaggerTags } from "../utils/types";
 import { getToken } from "../utils/utils";
 
 const apiUrl = 'http://localhost:3001/api/files';
@@ -68,4 +68,9 @@ export const addTags = async (id: number, tags: string[]): Promise<TaggerFileWit
     console.error(error);
     return null;
   }
+}
+
+export const getAllTags = async (): Promise<TaggerTags> => {
+  const response = await axios.get(`${apiUrl}/tags`);
+  return response.data;
 }

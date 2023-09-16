@@ -7,6 +7,7 @@ import { getObjectURL } from "../services/objects";
 import { isOwner } from "../services/auth";
 import { getToken, handleAnchorClick } from "../utils/utils";
 import Popup from "../common/Popup"
+import Tag from "./Tag";
 import './FileWindow.css';
 
 const FileWindow = ()  => {
@@ -95,9 +96,7 @@ const FileWindow = ()  => {
         <ul>
           {fileQuery.data.tags?.map((tag) => (
             <li key={tag.id}>
-              <Link to={`/search?q=${tag.name}`} onClick={handleAnchorClick}>
-                {tag.name}
-              </Link>
+              <Tag tag={tag} />
             </li>
           ))}
         </ul>

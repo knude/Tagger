@@ -1,6 +1,6 @@
 import { createPool, OkPacket, RowDataPacket } from "mysql2/promise";
 import config from "./config";
-import { TaggerFile, TaggerFiles, TaggerFileWithTags } from "./types";
+import { TaggerFile, TaggerFiles, TaggerFileWithTags, TaggerTags } from "./types";
 
 const pool = createPool({
   host: config.mySqlHost,
@@ -94,6 +94,8 @@ export async function getAllFiles(page: number): Promise<TaggerFiles> {
 }
 
 export async function getFileWithTags(fileId: number): Promise<TaggerFileWithTags | null> {
+  if (!fileId) return null;
+
   const query = `
     SELECT files.id, files.name, files.extension, tags.id AS tagId, tags.name AS tagName
     FROM files
@@ -102,9 +104,9 @@ export async function getFileWithTags(fileId: number): Promise<TaggerFileWithTag
     WHERE files.id = ?
   `;
   const [rows] = await pool.query<RowDataPacket[]>(query, [fileId]);
-  if (rows.length === 0) {
-    return null;
-  }
+
+  if (rows.length === 0) return null;
+
   return {
     id: rows[0].id as number,
     name: rows[0].name as string,
@@ -291,6 +293,26 @@ export async function isFileOwner(userId: string, fileId: number): Promise<boole
   const [rows] = await pool.query<RowDataPacket[]>(query, [userId, fileId]);
   return rows.length > 0;
 }
+
+export async function getAllTags(): Promise<TaggerTags> {
+  const query = `
+    SELECT tags.id, tags.name, COUNT(file_tags.tag_id) AS count
+    FROM tags
+    LEFT JOIN file_tags ON tags.id = file_tags.tag_id
+    GROUP BY tags.id
+    ORDER BY count DESC, tags.name ASC
+  `;
+  const [rows] = await pool.query<RowDataPacket[]>(query);
+  const taggerTags = rows.map((row) => ({
+    id: row.id as number,
+    name: row.name as string,
+    count: row.count as number,
+  }));
+  return {
+    tags: taggerTags,
+  };
+}
+
 
 export async function clearDatabase(): Promise<void> {
   try {

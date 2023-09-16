@@ -11,6 +11,14 @@ export interface TaggerTag {
   name: string;
 }
 
+export interface TaggerTagWithCount extends TaggerTag {
+  count: number;
+}
+
+export interface TaggerTags {
+  tags: TaggerTagWithCount[];
+}
+
 export interface TaggerFileWithTags extends TaggerFile {
   tags: TaggerTag[];
 }

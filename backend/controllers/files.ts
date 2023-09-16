@@ -3,7 +3,7 @@ import multer from "multer";
 import authMiddleware from "../utils/authMiddleware";
 import {
   deleteFile,
-  getAllFiles,
+  getAllFiles, getAllTags,
   getFileWithTags, getUserFiles,
   insertFile,
   insertTagsToFile,
@@ -17,6 +17,12 @@ import { AuthRequest, TaggerFiles } from "../utils/types";
 const router = Router();
 
 const upload = multer({ storage: multer.memoryStorage() });
+
+router.get("/tags", async (_req: Request, res: Response) => {
+  console.log("get tags")
+  const tags = await getAllTags();
+  res.json(tags);
+});
 
 router.get("/:id", async (req: Request, res: Response) => {
   const file = await getFileWithTags(Number(req.params.id));
@@ -117,5 +123,6 @@ router.post("/user", authMiddleware, async (req: AuthRequest, res: Response) => 
   const files = await getUserFiles(userId, page);
   res.json(files);
 });
+
 
 export default router;
