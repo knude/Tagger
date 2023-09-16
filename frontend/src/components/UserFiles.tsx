@@ -8,7 +8,6 @@ const UserFiles = () => {
 
   return (
     <div className="file-list">
-      <h2>My Files</h2>
       {fileQuery.isLoading && <h2>Loading...</h2>}
       {fileQuery.isError && <h2>An error occurred.</h2>}
       {fileQuery.data && (

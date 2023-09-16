@@ -27,15 +27,17 @@ const FileUploader = () => {
   };
 
   return (
-    <div>
-      <h1>Upload Files</h1>
+    <div className="main-window">
       {isAuthenticated && (
         <>
-          <input type="file" ref={fileRef} />
-          <button onClick={submit}>Upload</button>
-          <UserFiles />
+          <div className="side-bar">
+            <h1>Upload Files</h1>
+            <input type="file" ref={fileRef}/>
+            <button onClick={submit}>Upload</button>
+          </div>
+          <UserFiles/>
         </>
-      ) || <h2>Log in to upload files</h2>
+        ) || <h2>Log in to upload files</h2>
       }
     </div>
   );

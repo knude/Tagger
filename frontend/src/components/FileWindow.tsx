@@ -87,7 +87,7 @@ const FileWindow = ()  => {
   );
 
   return (
-    <div className="file-window">
+    <div className="file-window main-window">
       {deleteFilePopup}
       <div className="side-bar">
         <button onClick={() => window.history.back()}>Back</button>
@@ -112,7 +112,7 @@ const FileWindow = ()  => {
           </>
         )}
       </div>
-      <div className="file-window-content center-children">
+      <div className="file-window-content main-window-content center-children">
         {renderFile()}
       </div>
     </div>
