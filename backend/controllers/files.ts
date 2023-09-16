@@ -4,7 +4,7 @@ import authMiddleware from "../utils/authMiddleware";
 import {
   deleteFile,
   getAllFiles,
-  getFileWithTags,
+  getFileWithTags, getUserFiles,
   insertFile,
   insertTagsToFile,
   isFileOwner,
@@ -108,6 +108,13 @@ router.post("/search", async (req: Request, res: Response) => {
   } else {
     files = await searchForFiles(lowerCaseTags, page);
   }
+  res.json(files);
+});
+
+router.post("/user", authMiddleware, async (req: AuthRequest, res: Response) => {
+  const userId = req.userId as string;
+  const { page } = req.body;
+  const files = await getUserFiles(userId, page);
   res.json(files);
 });
 

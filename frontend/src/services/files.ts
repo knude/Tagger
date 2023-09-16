@@ -33,13 +33,26 @@ export const searchForFiles = async (): Promise<TaggerFiles> => {
   const params = new URLSearchParams(window.location.search);
   const query = params.get('q');
   const page = params.get('page') || 1;
-
   const tags = query ? query.split(' ') : [];
-  const payload = {
+
+  let payload = {
     tags,
     page,
   }
   const response = await axios.post(`${apiUrl}/search`, payload);
+  return response.data;
+}
+
+export const getUserFiles = async (): Promise<TaggerFiles> => {
+  const config = { headers: { authorization: getToken() } }
+
+  const params = new URLSearchParams(window.location.search);
+  const page = params.get('page') || 1;
+
+  const payload = {
+    page,
+  }
+  const response = await axios.post(`${apiUrl}/user`, payload, config);
   return response.data;
 }
 

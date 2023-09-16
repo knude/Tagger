@@ -202,8 +202,6 @@ async function getTotalPages(tags: string[]): Promise<number> {
   return Math.ceil(rows[0].total / config.filesPerPage);
 }
 
-
-
 export async function searchForFiles(tags: string[], page: number): Promise<TaggerFiles> {
 
   const offset = (page - 1) * config.filesPerPage;
@@ -229,6 +227,32 @@ export async function searchForFiles(tags: string[], page: number): Promise<Tagg
     extension: row.extension as string,
   }));
   const totalPages = await getTotalPages(tags);
+  return {
+    files: taggerFiles,
+    totalPages,
+  }
+}
+
+export async function getUserFiles (userId: string, page: number): Promise<TaggerFiles> {
+  const offset = (page - 1) * config.filesPerPage;
+  const query = `
+    SELECT files.id, files.name, files.extension
+    FROM files
+    LEFT JOIN user_files ON files.id = user_files.file_id
+    WHERE user_files.user_id = ?
+    ORDER BY files.id DESC
+    LIMIT ${config.filesPerPage}
+    OFFSET ${offset}
+  `;
+
+  const [rows] = await pool.query<RowDataPacket[]>(query, [userId]);
+  const taggerFiles = rows.map((row) => ({
+    id: row.id as number,
+    name: row.name as string,
+    extension: row.extension as string,
+  }));
+  // TODO: Fix total pages for user files
+  const totalPages = await getTotalPages([]);
   return {
     files: taggerFiles,
     totalPages,
