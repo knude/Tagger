@@ -3,7 +3,6 @@ import { ChangeEvent, useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import "./SearchBar.css"
 
-
 const SearchBar = () => {
   const queryClient = useQueryClient();
   const [query, setQuery] = useState("");
@@ -11,7 +10,7 @@ const SearchBar = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!query && searchParams.get("q")) {
+    if (searchParams.get("q")) {
       setQuery(searchParams.get("q") ?? "");
     }
   }, [searchParams.get("q")]);
@@ -25,7 +24,7 @@ const SearchBar = () => {
       if (query) setSearchParams({q: query})
       else setSearchParams({})
     }
-    await queryClient.invalidateQueries(["files"]);
+    await queryClient.invalidateQueries(["files"], { exact: true });
   }
 
   return (
