@@ -18,9 +18,18 @@ const Search = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const tags = searchParams.get("q")?.split(" ") || [];
 
-  const handleAddTag = async (tagName: string) => {
+  const handleTagButtonClick = async (tagName: string) => {
     if (!tags.includes(tagName)) {
       setSearchParams({ q: [...tags, tagName].join(" ") });
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      await queryClient.invalidateQueries(["files"], { exact: true });
+    } else {
+      const filteredTags = tags.filter((tag) => tag !== tagName);
+      if (filteredTags.length === 0) {
+        setSearchParams({});
+      } else {
+        setSearchParams({ q: filteredTags.join(" ") });
+      }
       await new Promise((resolve) => setTimeout(resolve, 0));
       await queryClient.invalidateQueries(["files"], { exact: true });
     }
@@ -41,8 +50,10 @@ const Search = () => {
               tag={tag}
             />
             {" "}
-            <button onClick={() => handleAddTag(tag.name)}>
-              +
+            <button onClick={() => handleTagButtonClick(tag.name)}>
+              {
+                tags.includes(tag.name) ? "-" : "+"
+              }
             </button> {tag.count}
           </li>
         ))}
