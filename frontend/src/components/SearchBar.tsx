@@ -10,9 +10,7 @@ const SearchBar = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (searchParams.get("q")) {
-      setQuery(searchParams.get("q") ?? "");
-    }
+    setQuery(searchParams.get("q") ?? "");
   }, [searchParams.get("q")]);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => setQuery(event.target.value);
@@ -30,7 +28,7 @@ const SearchBar = () => {
   return (
     <div>
       <form onSubmit={(e) => {e.preventDefault(); search()}}>
-        <input type="text" value={query ?? searchParams.get("q")} onChange={handleChange} />
+        <input type="search" value={query ?? searchParams.get("q")} onChange={handleChange} />
         <button type="submit">Search</button>
       </form>
     </div>

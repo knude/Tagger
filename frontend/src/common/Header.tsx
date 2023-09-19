@@ -1,7 +1,6 @@
 import { FC, useState } from "react";
 import { Link } from 'react-router-dom';
 import { useAuth0 } from "@auth0/auth0-react";
-import { handleAnchorClick } from "../utils/utils";
 import Popup from "../common/Popup"
 import './Header.css';
 
@@ -19,18 +18,18 @@ const Header: FC = () => {
         </div>
       </Popup>}
       <nav>
-        <Link to="/" onClick={handleAnchorClick}>
+        <Link to="/">
           Home
         </Link>
-        <Link to="/search" onClick={handleAnchorClick}>
+        <Link to="/search">
           Search
         </Link>
-        <Link to="/upload" onClick={handleAnchorClick}>
+        <Link to="/upload">
           Upload
         </Link>
         {isAuthenticated && !isLoading && (
           <>
-            <Link to="/user" onClick={handleAnchorClick}>
+            <Link to="/user">
               Profile
             </Link>
             <button onClick={() => setActive(true)}>

@@ -1,11 +1,10 @@
 import { useParams } from 'react-router-dom';
 import { ChangeEvent, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
 import { getFile, addTags, deleteFile } from "../services/files";
 import { getObjectURL } from "../services/objects";
 import { isOwner } from "../services/auth";
-import { getToken, handleAnchorClick } from "../utils/utils";
+import { getToken } from "../utils/utils";
 import Popup from "../common/Popup"
 import Tag from "./Tag";
 import './FileWindow.css';
