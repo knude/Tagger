@@ -43,6 +43,11 @@ li {
     justify-content: flex-end;
 }
 
+.left {
+    display: flex;
+    justify-content: flex-start;
+}
+
 .main-window {
     display: flex;
     height: 100%;
@@ -60,4 +65,8 @@ li {
 
 .side-bar li {
     cursor: pointer;
+}
+
+.side-bar li button {
+    width: 1.7em;
 }

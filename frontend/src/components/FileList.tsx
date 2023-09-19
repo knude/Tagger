@@ -33,17 +33,21 @@ const FileList = () => {
           </li>
         ))}
       </ul>
-      <nav className="center-children">
-        {page > 1 && <button onClick={()=>setPage(1)}>{"<<"}</button>}
-        {page > 1 && <button onClick={()=>setPage(page-1)}>{"<"}</button>}
-        {page < fileQuery.data.totalPages && <button onClick={()=>setPage(page+1)}>{">"}</button>}
-        {page < fileQuery.data.totalPages && <button onClick={()=>setPage(fileQuery.data.totalPages)}>{">>"}</button>}
-      </nav>
-      {fileQuery.data.totalPages &&
-        <span className="center-children">
-            Page {page} of {fileQuery.data.totalPages}
-        </span>
-      }
+      <div className="center-children">
+        <nav>
+          <div className="left">
+            {page > 1 && <button onClick={()=>setPage(1)}>{"<<"}</button>}
+            {page > 1 && <button onClick={()=>setPage(page-1)}>{"<"}</button>}
+          </div>
+          {fileQuery.data.totalPages &&
+            <div className="page-info">Page {page} of {fileQuery.data.totalPages}</div>
+          }
+          <div className="right">
+            {page < fileQuery.data.totalPages && <button onClick={()=>setPage(page+1)}>{">"}</button>}
+            {page < fileQuery.data.totalPages && <button onClick={()=>setPage(fileQuery.data.totalPages)}>{">>"}</button>}
+          </div>
+        </nav>
+      </div>
     </div>
   );
 };

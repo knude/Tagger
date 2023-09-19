@@ -69,9 +69,7 @@ const FileWindow = ()  => {
       );
     }
     return (
-      <>
-        <img src={objectUrl} alt="file" />
-      </>
+      <img src={objectUrl} alt="file" />
     );
   }
 
@@ -87,19 +85,25 @@ const FileWindow = ()  => {
     </Popup>
   );
 
+  const renderTags = () => {
+    return (
+      <ul>
+        {fileQuery.data.tags?.map((tag) => (
+          <li key={tag.id}>
+            <Tag tag={tag} />
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
   return (
     <div className="file-window main-window">
       {deleteFilePopup}
       <div className="side-bar">
         <button onClick={() => window.history.back()}>Back</button>
         <h2>Tags</h2>
-        <ul>
-          {fileQuery.data.tags?.map((tag) => (
-            <li key={tag.id}>
-              <Tag tag={tag} />
-            </li>
-          ))}
-        </ul>
+        {renderTags()}
         {authQuery.data && (
           <>
             <form onSubmit={(e) => {e.preventDefault(); submitNewTag()}}>

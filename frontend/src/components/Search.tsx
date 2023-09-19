@@ -46,15 +46,14 @@ const Search = () => {
       <ul>
         {tagsQuery.data.tags.map((tag: TaggerTagWithCount) => (
           <li key={tag.id}>
-            <Tag
-              tag={tag}
-            />
-            {" "}
             <button onClick={() => handleTagButtonClick(tag.name)}>
               {
                 tags.includes(tag.name) ? "-" : "+"
               }
-            </button> {tag.count}
+            </button> {" "}
+            <Tag
+              tag={tag}
+            /> {tag.count}
           </li>
         ))}
       </ul>
