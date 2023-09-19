@@ -111,7 +111,7 @@ const FileWindow = ()  => {
           </>
         )}
       </div>
-      <div className="file-window-content main-window-content center-children">
+      <div className="file-window-content main-window-content">
         {renderFile()}
       </div>
     </div>

@@ -21,3 +21,7 @@
     height: 10em;
     width: 10em;
 }
+
+.file-list nav {
+    margin-top: 0.75em;
+}

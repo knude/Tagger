@@ -1,4 +1,11 @@
 .file-window-content video,
 .file-window-content img {
     max-width: 85%;
+    max-height: 75%;
+}
+
+.file-window-content {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
 }

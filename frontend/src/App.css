@@ -1,16 +1,22 @@
 html {
     font-size: 62.5%;
+    height: 100%;
 }
 
 body {
     margin: 0;
     font-family: "Arial", sans-serif;
     font-size: 1.6rem;
+    height: inherit;
 }
 
+#root {
+    height: inherit;
+}
 
 .main {
     padding: 0.75em;
+    height: inherit;
 }
 
 .main h1 {
@@ -47,7 +53,7 @@ li {
 }
 
 .side-bar {
-    width: 15%;
+    min-width: 15%;
     min-height: 100%;
     margin-right: 1rem;
 }

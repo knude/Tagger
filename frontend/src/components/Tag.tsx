@@ -2,7 +2,11 @@ import { Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { TaggerTag } from "../utils/types";
 
-const Tag = ({ tag }: { tag: TaggerTag }) => {
+interface TagProps {
+  tag: TaggerTag;
+}
+
+const Tag = ({ tag }: TagProps) => {
   const queryClient = useQueryClient();
 
   const handleTagClick = async () => {
@@ -11,9 +15,11 @@ const Tag = ({ tag }: { tag: TaggerTag }) => {
   };
 
   return (
-    <Link to={`/search?q=${tag.name}`} onClick={handleTagClick}>
-      {tag.name}
-    </Link>
+    <>
+      <Link to={`/search?q=${tag.name}`} onClick={handleTagClick}>
+        {tag.name}
+      </Link>
+    </>
   );
 }
 

@@ -1,4 +1,5 @@
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useSearchParams } from "react-router-dom";
 import { getAllTags } from "../services/files";
 import FileList from "./FileList";
 import SearchBar from "./SearchBar";
@@ -6,7 +7,6 @@ import { TaggerTagWithCount } from "../utils/types";
 import Tag from "./Tag";
 
 const Search = () => {
-
   const tagsQuery = useQuery(
     ["tags"],
     () => getAllTags(), {
@@ -14,11 +14,41 @@ const Search = () => {
     }
   );
 
+  const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tags = searchParams.get("q")?.split(" ") || [];
+
+  const handleAddTag = async (tagName: string) => {
+    if (!tags.includes(tagName)) {
+      setSearchParams({ q: [...tags, tagName].join(" ") });
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      await queryClient.invalidateQueries(["files"], { exact: true });
+    }
+  };
+
   if (tagsQuery.isLoading || !tagsQuery) return <h2>Loading...</h2>
   if (tagsQuery.isError) {
     const errorMessage = tagsQuery.error instanceof Error ? tagsQuery.error.message : "An error occurred.";
     return <h2>{errorMessage}</h2>
   }
+
+  const renderTags = () => {
+    return (
+      <ul>
+        {tagsQuery.data.tags.map((tag: TaggerTagWithCount) => (
+          <li key={tag.id}>
+            <Tag
+              tag={tag}
+            />
+            {" "}
+            <button onClick={() => handleAddTag(tag.name)}>
+              +
+            </button> {tag.count}
+          </li>
+        ))}
+      </ul>
+    );
+  };
 
   return (
     <div className="main-window">
@@ -26,13 +56,7 @@ const Search = () => {
         <h1>Search</h1>
         <SearchBar />
         <h2>Tags</h2>
-        <ul>
-          {tagsQuery.data.tags.map((tag: TaggerTagWithCount) => (
-            <li key={tag.id}>
-              <Tag tag={tag} /> {tag.count}
-            </li>
-          ))}
-        </ul>
+        {renderTags()}
       </div>
       <FileList />
     </div>

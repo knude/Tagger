@@ -25,22 +25,25 @@ const FileList = () => {
   }
 
   return (
-    <div>
-      <div className="file-list">
-        <ul>
-          {fileQuery.data.files.map((file: TaggerFile) => (
-            <li className="center-children" key={file.id}>
-              <File file={file}/>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div>
-        <nav className="center-children">
-          {page > 1 && <button onClick={()=>setPage(page-1)}>Previous</button>}
-          {page < fileQuery.data.totalPages && <button onClick={()=>setPage(page+1)}>Next</button>}
-        </nav>
-      </div>
+    <div className="file-list">
+      <ul>
+        {fileQuery.data.files.map((file: TaggerFile) => (
+          <li className="center-children" key={file.id}>
+            <File file={file}/>
+          </li>
+        ))}
+      </ul>
+      <nav className="center-children">
+        {page > 1 && <button onClick={()=>setPage(1)}>{"<<"}</button>}
+        {page > 1 && <button onClick={()=>setPage(page-1)}>{"<"}</button>}
+        {page < fileQuery.data.totalPages && <button onClick={()=>setPage(page+1)}>{">"}</button>}
+        {page < fileQuery.data.totalPages && <button onClick={()=>setPage(fileQuery.data.totalPages)}>{">>"}</button>}
+      </nav>
+      {fileQuery.data.totalPages &&
+        <span className="center-children">
+            Page {page} of {fileQuery.data.totalPages}
+        </span>
+      }
     </div>
   );
 };
