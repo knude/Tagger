@@ -70,7 +70,7 @@ export const addTags = async (id: number, tags: string[]): Promise<TaggerFileWit
   }
 }
 
-export const getAllTags = async (): Promise<TaggerTags> => {
-  const response = await axios.get(`${apiUrl}/tags`);
+export const getTopTags = async (tags: string[]): Promise<TaggerTags> => {
+  const response = await axios.get(`${apiUrl}/tags`, { params: { tags: tags } });
   return response.data;
 }

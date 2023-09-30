@@ -301,6 +301,7 @@ export async function getAllTags(): Promise<TaggerTags> {
     LEFT JOIN file_tags ON tags.id = file_tags.tag_id
     GROUP BY tags.id
     ORDER BY count DESC, tags.name ASC
+    LIMIT 10
   `;
   const [rows] = await pool.query<RowDataPacket[]>(query);
   const taggerTags = rows.map((row) => ({
@@ -312,6 +313,46 @@ export async function getAllTags(): Promise<TaggerTags> {
     tags: taggerTags,
   };
 }
+
+export async function getTopRelatedTags(tags: string[]): Promise<TaggerTags> {
+  const placeholders = tags.map(() => '?').join(', ');
+
+  const query = `
+    SELECT file_id
+    FROM file_tags
+    WHERE tag_id IN (SELECT id FROM tags WHERE name IN (${placeholders}))
+    GROUP BY file_id
+    HAVING COUNT(DISTINCT tag_id) = ?
+  `;
+  const [rows] = await pool.query<RowDataPacket[]>(query, [...tags, tags.length]);
+  const tagIds: number[] = rows.map((row) => row.file_id as number);
+
+  if (tagIds.length === 0) {
+    return { tags: [] };
+  }
+  const tagQuery = `
+    SELECT tags.id, tags.name, COUNT(file_tags.tag_id) AS count
+    FROM tags
+    LEFT JOIN file_tags ON tags.id = file_tags.tag_id
+    WHERE file_tags.file_id IN (${tagIds.join(', ')})
+    GROUP BY tags.id
+    ORDER BY count DESC, tags.name ASC
+    LIMIT 10
+  `;
+
+  const [tagRows] = await pool.query<RowDataPacket[]>(tagQuery, [...tags, ...tags]);
+  const taggerTags = tagRows.map((row) => ({
+    id: row.id as number,
+    name: row.name as string,
+    count: row.count as number,
+  }));
+
+  return {
+    tags: taggerTags,
+  };
+}
+
+
 
 
 export async function clearDatabase(): Promise<void> {

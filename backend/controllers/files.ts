@@ -4,7 +4,7 @@ import authMiddleware from "../utils/authMiddleware";
 import {
   deleteFile,
   getAllFiles, getAllTags,
-  getFileWithTags, getUserFiles,
+  getFileWithTags, getTopRelatedTags, getUserFiles,
   insertFile,
   insertTagsToFile,
   isFileOwner,
@@ -18,9 +18,22 @@ const router = Router();
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-router.get("/tags", async (_req: Request, res: Response) => {
+router.get("/tags/all", async (_req: Request, res: Response) => {
   const tags = await getAllTags();
   res.json(tags);
+});
+
+router.get("/tags", async (req: Request, res: Response) => {
+  const tags = req.query.tags ?? [];
+
+  if (tags.length === 0) {
+    const tags = await getAllTags();
+    res.json(tags);
+    return;
+  }
+  const lowerCaseTags = tags?.toString().split(",").map((tag: string) => tag.toLowerCase());
+  const topTags = await getTopRelatedTags(lowerCaseTags);
+  res.json(topTags)
 });
 
 router.get("/:id", async (req: Request, res: Response) => {

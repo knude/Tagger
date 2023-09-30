@@ -1,22 +1,23 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { useSearchParams } from "react-router-dom";
-import { getAllTags } from "../services/files";
+import { getTopTags } from "../services/files";
 import FileList from "./FileList";
 import SearchBar from "./SearchBar";
 import { TaggerTagWithCount } from "../utils/types";
 import Tag from "./Tag";
 
 const Search = () => {
-  const tagsQuery = useQuery(
-    ["tags"],
-    () => getAllTags(), {
-      enabled: true,
-    }
-  );
-
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
   const tags = searchParams.get("q")?.split(" ") || [];
+
+  const tagsQuery = useQuery(
+    ["tags", tags],
+    () => getTopTags(tags),
+    {
+      enabled: true,
+    }
+  );
 
   const handleTagButtonClick = async (tagName: string) => {
     if (!tags.includes(tagName)) {
@@ -35,13 +36,12 @@ const Search = () => {
     }
   };
 
-  if (tagsQuery.isLoading || !tagsQuery) return <h2>Loading...</h2>
-  if (tagsQuery.isError) {
-    const errorMessage = tagsQuery.error instanceof Error ? tagsQuery.error.message : "An error occurred.";
-    return <h2>{errorMessage}</h2>
-  }
-
   const renderTags = () => {
+    if (tagsQuery.isLoading || !tagsQuery) return <h2>Loading...</h2>
+    if (tagsQuery.isError) {
+      const errorMessage = tagsQuery.error instanceof Error ? tagsQuery.error.message : "An error occurred.";
+      return <h2>{errorMessage}</h2>
+    }
     return (
       <ul>
         {tagsQuery.data.tags.map((tag: TaggerTagWithCount) => (

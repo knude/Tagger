@@ -32,8 +32,12 @@ const FileUploader = () => {
         <>
           <div className="side-bar">
             <h1>Upload Files</h1>
-            <input type="file" ref={fileRef}/>
-            <button onClick={submit}>Upload</button>
+            <form>
+              <input type="file" ref={fileRef} />
+              <button type="button" onClick={submit}>Upload</button>
+            </form>
+            {newFileMutation.isLoading && <h2>Uploading...</h2>}
+            {newFileMutation.isError && <h2>An error occurred.</h2>}
           </div>
           <UserFiles/>
         </>
