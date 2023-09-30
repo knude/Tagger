@@ -2,7 +2,7 @@ import { Request, Response, Router } from 'express';
 import multer from "multer";
 import authMiddleware from "../utils/authMiddleware";
 import {
-  deleteFile,
+  deleteFile, deleteTagFromFile,
   getAllFiles, getAllTags,
   getFileWithTags, getTopRelatedTags, getUserFiles,
   insertFile,
@@ -108,6 +108,31 @@ router.post("/:id/tags", authMiddleware, async (req: AuthRequest, res: Response)
     if (file === null) {
       res.sendStatus(404);
     } else {
+      res.json(file);
+    }
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+});
+
+router.delete("/:id/tags/:tagId", authMiddleware, async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.userId as string;
+    const id = Number(req.params.id);
+
+    const isOwner = await isFileOwner(userId,id);
+    if (!isOwner) {
+      res.sendStatus(401);
+      return;
+    }
+
+    const tagId = Number(req.params.tagId);
+    const file = await getFileWithTags(id);
+    if (file === null) {
+      res.sendStatus(404);
+    } else {
+      await deleteTagFromFile(id, tagId);
       res.json(file);
     }
   } catch (error) {

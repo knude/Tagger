@@ -1,7 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { ChangeEvent, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getFile, addTags, deleteFile } from "../services/files";
+import { getFile, addTags, deleteTag, deleteFile } from "../services/files";
 import { getObjectURL } from "../services/objects";
 import { isOwner } from "../services/auth";
 import { getToken } from "../utils/utils";
@@ -43,6 +43,13 @@ const FileWindow = ()  => {
       onSuccess: async () => {
         await queryClient.refetchQueries(["files"],{ exact: true });
         window.history.back();
+      }
+    });
+
+  const deleteTagMutation = useMutation(
+    (tagId: number) => deleteTag(id, tagId), {
+      onSuccess: async () => {
+        await fileQuery.refetch();
       }
     });
 
@@ -89,7 +96,7 @@ const FileWindow = ()  => {
       <ul>
         {fileQuery.data.tags?.map((tag) => (
           <li key={tag.id}>
-            <Tag tag={tag} />
+            <Tag tag={tag} /> {authQuery.data && <button onClick={() => deleteTagMutation.mutate(tag.id)}>x</button>}
           </li>
         ))}
       </ul>

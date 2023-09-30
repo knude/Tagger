@@ -70,6 +70,17 @@ export const addTags = async (id: number, tags: string[]): Promise<TaggerFileWit
   }
 }
 
+export const deleteTag = async (id: number, tagId: number): Promise<TaggerFileWithTags | null> => {
+  try {
+    const config = { headers: { authorization: getToken() } }
+    const response = await axios.delete(`${apiUrl}/${id}/tags/${tagId}`, config);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
 export const getTopTags = async (tags: string[]): Promise<TaggerTags> => {
   const response = await axios.get(`${apiUrl}/tags`, { params: { tags: tags } });
   return response.data;

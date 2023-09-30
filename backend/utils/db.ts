@@ -166,6 +166,14 @@ export async function insertTagsToFile(fileNumber: number, tags: string[]): Prom
   return await getFileWithTags(fileNumber) as TaggerFileWithTags;
 }
 
+export async function deleteTagFromFile(fileId: number, tagId: number): Promise<void> {
+  const query = `
+    DELETE FROM file_tags
+    WHERE file_id = ? AND tag_id = ?
+  `;
+  await pool.query(query, [fileId, tagId]);
+}
+
 
 async function createTag(tagName: string): Promise<number> {
   const query = `
