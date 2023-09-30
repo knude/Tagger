@@ -96,7 +96,7 @@ const FileWindow = ()  => {
       <ul>
         {fileQuery.data.tags?.map((tag) => (
           <li key={tag.id}>
-            <Tag tag={tag} /> {authQuery.data && <button onClick={() => deleteTagMutation.mutate(tag.id)}>x</button>}
+            {authQuery.data && <button onClick={() => deleteTagMutation.mutate(tag.id)}>x</button>} <Tag tag={tag} />
           </li>
         ))}
       </ul>
